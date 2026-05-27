@@ -1,0 +1,74 @@
+Adobe AI Toolkit: Automated Video Editor
+This project is a distributed AI video automation system. It analyzes video/audio for silence, generates a screenplay via LLMs, and uses a local GPU-accelerated Image API to create visual assets for automated Adobe Premiere Pro workflows.
+
+🏗 System Architecture
+The toolkit is designed to run in a Client-Server model:
+
+Backend: Python-based logic for signal processing and orchestration.
+
+Intelligence: Groq Cloud API for high-speed transcription and keyword analysis.
+
+Visual Factory: Local Stable Diffusion API (via Stability Matrix) on a high-end GPU.
+
+Frontend: Adobe Premiere Pro (ExtendScript/JSX integration).
+
+🚀 Gamer PC Deployment (Step-by-Step)
+1. Prerequisites
+Python 3.10+
+
+Stability Matrix (with Stable Diffusion WebUI package)
+
+FFmpeg (installed and added to System PATH)
+
+2. Installation
+PowerShell
+# Clone the repository
+git clone https://github.com/Omarsghr/Adobe-AI-Toolkit.git
+cd Adobe-AI-Toolkit
+
+# Setup Virtual Environment
+python -m venv venv
+.\venv\Scripts\activate
+
+# Install Core Dependencies
+pip install requests moviepy librosa groq-client python-dotenv
+3. Local Image API Setup
+Open Stability Matrix.
+
+Go to Package Settings for Stable Diffusion WebUI.
+
+Add the following launch arguments:
+--api --listen --xformers --lowvram
+
+Launch the engine and ensure it is running on http://127.0.0.1:7860.
+
+4. Configuration
+Create a .env file in the root directory:
+
+Plaintext
+GROQ_API_KEY=your_groq_api_key_here
+LOCAL_IMAGE_API=http://127.0.0.1:7860/sdapi/v1/txt2img
+📁 Project Structure
+src/signal_analysis/: Detects silence and generates cut maps.
+
+src/transcription/: Handles AI transcription via Groq.
+
+src/ai_logic/: Generates image prompts and creative screenplay logic.
+
+src/visualist/: Connects to the local GPU to render image assets.
+
+main.py: The "Master Glue" that runs the entire pipeline.
+
+🛠 Usage
+Place your source video in the root folder.
+
+Update the filename in main.py.
+
+Execute the pipeline:
+
+PowerShell
+python main.py
+Import the generated adobe_screenplay.json and assets/ai_images/ into Adobe Premiere Pro using the provided JSX scripts.
+
+📝 License
+Private Project - Developed for Automated Video Production Workflows.

@@ -1,0 +1,24 @@
+# Ignore the old toolkit and all libraries
+Adobe-AI-Toolkit/
+venv/
+Lib/
+site-packages/
+bin/
+Include/
+
+# Ignore media and binary tools
+*.exe
+*.mp3
+*.mp4
+*.wav
+*.db
+*.jpg
+*.png
+
+# Ignore private keys
+.env
+__pycache__/
+.venv/
+*.db
+temp_audio.mp3
+.vscode/

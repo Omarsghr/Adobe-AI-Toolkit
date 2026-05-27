@@ -1,0 +1,52 @@
+{
+  "project_configuration": {
+    "target_sequence_fps": 30,
+    "global_vocal_padding_seconds": 0.1,
+    "default_image_cost_tier_usd": 0.004
+  },
+  "timeline_data": {
+    "cuts_and_trims": [
+      {
+        "type": "dead_air_removal",
+        "start_timestamp": 10.2,
+        "end_timestamp": 12.0,
+        "action_execution": "ripple_delete"
+      },
+      {
+        "type": "dead_air_removal",
+        "start_timestamp": 25.1,
+        "end_timestamp": 26.5,
+        "action_execution": "ripple_delete"
+      }
+    ],
+    "video_track_1_vocals": [],
+    "video_track_2_b_roll_images": [
+      {
+        "asset_origin": "generated_image",
+        "generation_prompt": "Local GPU placeholder cinematic image",
+        "start_timestamp": 0.0,
+        "end_timestamp": 4.0,
+        "duration_seconds": 4.0,
+        "transition_behavior_in": "cross_dissolve",
+        "transition_behavior_out": "none"
+      }
+    ],
+    "audio_track_1_vocals": [],
+    "audio_track_2_music_beds": [
+      {
+        "asset_origin": "generated_ambient_track",
+        "style_descriptive_prompt": "local_gamer_rig_ambient_lofi",
+        "start_timestamp": 0,
+        "end_timestamp": 26.5,
+        "duration_seconds": 26.5,
+        "base_volume_db": -18,
+        "audio_ducking": {
+          "active_while_vocals_playing": true,
+          "attenuation_db": -12
+        },
+        "fade_in_seconds": 2.0,
+        "fade_out_seconds": 1.5
+      }
+    ]
+  }
+}

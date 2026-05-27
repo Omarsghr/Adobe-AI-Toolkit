@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adobe AI Toolkit</title>
+
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';">
+
+    <link rel="stylesheet" href="my-panel.css">
+    <script src="./my-logic.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="title">Adobe AI Toolkit</h1>
+                <p class="subtitle">Intelligent video editing powered by AI</p>
+            </div>
+        </header>
+
+        <!-- Hidden link to open local files (set target path in JS) -->
+        <a id="open-file-link" href="#" style="display:none"></a>
+
+
+        <!-- Main Content -->
+        <main class="content">
+            <!-- Upload Section -->
+            <section class="upload-section">
+                <div class="section-header">
+                    <h2>Upload Media</h2>
+                    <p class="section-description">Select a video sequence to analyze and process</p>
+                </div>
+
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📹</div>
+                    <p class="upload-text">Drag your video here or click to browse</p>
+                    <input type="file" id="video-file-input" class="file-input" accept="video/*"
+                        aria-label="Select video file">
+                    <span class="file-hint">Supports MP4, MOV, MKV, and more</span>
+                </div>
+
+                <!-- File Confirmation Section -->
+                <div id="file-confirmation" class="file-confirmation" style="display: none;">
+                    <div class="confirmation-content">
+                        <span class="confirmation-icon">✓</span>
+                        <div class="confirmation-text">
+                            <p class="confirmation-label">Video File Ready</p>
+                            <p id="confirmation-details" class="confirmation-details"></p>
+                        </div>
+                        <button id="change-file-btn" class="btn-change-file">Change</button>
+                    </div>
+                </div>
+
+                <!-- Error Message Section -->
+                <div id="file-error" class="file-error" style="display: none;">
+                    <div class="error-icon">⚠</div>
+                    <p id="error-message" class="error-text"></p>
+                </div>
+
+                <!-- 🚀 🚀 الـ SECTION الجْدِيدَة د الـ FEW-SHOT ANALOGY LEARNING 🚀 🚀 -->
+                <div id="analogy-container" class="analogy-container"
+                    style="margin-top: 16px; padding: 12px; border: 1px solid #444; border-radius: 4px; background-color: #232323;">
+                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                        <span style="font-size: 16px; margin-right: 6px;">🧠</span>
+                        <h3
+                            style="margin: 0; font-size: 13px; font-weight: 6px; color: #41a6f6; text-transform: uppercase; letter-spacing: 0.5px;">
+                            Few-Shot Learning by Analogy</h3>
+                    </div>
+
+                    <div class="input-group" style="margin-bottom: 8px;">
+                        <label for="style-name"
+                            style="display: block; font-size: 11px; margin-bottom: 4px; color: #b3b3b3;">Style
+                            Identifier (Name):</label>
+                        <input type="text" id="style-name" placeholder="e.g., Ali_Abdaal_Style"
+                            style="width: 100%; box-sizing: border-box; background: #1a1a1a; color: #fff; border: 1px solid #555; padding: 6px; border-radius: 3px; font-size: 12px;">
+                    </div>
+
+                    <div class="input-group" style="margin-bottom: 8px;">
+                        <label for="style-type"
+                            style="display: block; font-size: 11px; margin-bottom: 4px; color: #b3b3b3;">Pacing Context
+                            Archetype:</label>
+                        <select id="style-type"
+                            style="width: 100%; box-sizing: border-box; background: #1a1a1a; color: #fff; border: 1px solid #555; padding: 6px; border-radius: 3px; font-size: 12px;">
+                            <option value="Education">Education (Clarity, Zoom, High Graphics)</option>
+                            <option value="Business" selected>Business (Clean, Metrics Lower-thirds)</option>
+                            <option value="Vlog">Vlog (Dynamic Cuts, Camera Shakes)</option>
+                            <option value="Cinematic">Cinematic (Atmospheric, Slow-mo Luts)</option>
+                            <option value="Marketing">Marketing (Fast Hooks, Bold CTA Text)</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="reference-json"
+                            style="display: block; font-size: 11px; margin-bottom: 4px; color: #b3b3b3;">Reference DNA
+                            Template (Paste Open-source JSON):</label>
+                        <textarea id="reference-json" placeholder='{ "commands": [...], "image_prompts": [...] }'
+                            rows="5"
+                            style="width: 100%; box-sizing: border-box; font-family: monospace; font-size: 11px; background: #1a1a1a; color: #a9ffb6; border: 1px solid #555; padding: 6px; border-radius: 3px; resize: vertical;"></textarea>
+                    </div>
+                </div>
+
+                <div class="action-buttons" style="margin-top: 16px;">
+                    <!-- الـ Button الرئيسي د الـ Processing غايبقى هو نيت ولكن غانربطوه ف الـ JS باش يقرر على حساب الـ Analogy -->
+                    <button id="upload-btn" class="btn btn-primary" disabled>
+                        <span class="btn-icon">⚡</span>
+                        <span id="btn-text" class="btn-text">Start Processing</span>
+                    </button>
+
+                    <!-- Secondary action: open local file chooser / launch file explorer -->
+                    <button id="open-local-btn" class="btn btn-secondary" style="margin-left: 8px; display:none;">
+                        Open Local Files
+                    </button>
+                </div>
+
+            </section>
+
+            <!-- Status Section -->
+            <section class="status-section">
+                <div class="status-container">
+                    <div class="status-header">
+                        <span class="status-label">Status</span>
+                        <span id="status" class="status-value">Ready</span>
+                    </div>
+                    <div id="status-details" class="status-details"></div>
+                </div>
+            </section>
+
+            <!-- Info Section -->
+            <section class="info-section">
+                <div class="info-card">
+                    <h3 class="info-title">Features</h3>
+                    <ul class="info-list">
+                        <li>Automatic scene detection</li>
+                        <li>AI-powered transcription</li>
+                        <li>Smart timeline markers</li>
+                        <li>Screenplay mapping</li>
+                        <li>Adaptive Analogy Engine (Active)</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p class="footer-text">Adobe AI Toolkit • Enhanced Creative Control</p>
+        </footer>
+    </div>
+</body>
+
+</html>

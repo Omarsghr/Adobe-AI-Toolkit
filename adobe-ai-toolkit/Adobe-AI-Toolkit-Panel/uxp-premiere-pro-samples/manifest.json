@@ -1,0 +1,29 @@
+{
+  "id": "com.ai.toolkit.panel",
+  "name": "Adobe AI Toolkit",
+  "version": "1.0.0",
+  "main": "my-panel.html",
+  "host": {
+    "app": "PR",
+    "minVersion": "24.0"
+  },
+  "manifestVersion": 5,
+  "entrypoints": [
+    {
+      "type": "panel",
+      "id": "mainPanel",
+      "label": {
+        "default": "Adobe AI Toolkit"
+      },
+      "minimumSize": { "width": 250, "height": 300 },
+      "preferredSize": { "width": 300, "height": 500 }
+    }
+  ],
+  "requiredPermissions": {
+    "network": {
+      "domains": [
+        "http://localhost:5000"
+      ]
+    }
+  }
+}

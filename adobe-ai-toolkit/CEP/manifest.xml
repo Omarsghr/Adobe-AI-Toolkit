@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ExtensionManifest xmlns="http://ns.adobe.com/extension/13">
+    <ExtensionBundleVersion>1.0.0</ExtensionBundleVersion>
+    <ExtensionBundleId>com.adobe.ai_toolkit</ExtensionBundleId>
+    <Author email="developer@adobe-ai-toolkit.local">Adobe AI Toolkit</Author>
+    <License></License>
+    <Description>AI-powered video editing with automated dead air removal, transitions, audio ducking, and subtitle generation</Description>
+    <UI>
+        <Type>Panel</Type>
+        <Geometry>
+            <Size>
+                <Width>420</Width>
+                <Height>700</Height>
+            </Size>
+        </Geometry>
+    </UI>
+    <Host Name="PPRO" Version="[2021.0,2025.0]" />
+    <RequiredRuntime>
+        <Name>CSXS</Name>
+        <Version>12.0</Version>
+    </RequiredRuntime>
+    <ExecutionEnvironment>
+        <Namespace>INJECTED</Namespace>
+        <HostList>
+            <Host Name="PPRO" Port="8500"/>
+        </HostList>
+    </ExecutionEnvironment>
+    <Extension Id="adobe_ai_toolkit_panel">
+        <Life>
+            <StartOn>
+                <Event Name="com.adobe.csxs.events.ApplicationActivate"/>
+            </StartOn>
+        </Life>
+        <UI>
+            <Type>Panel</Type>
+            <Menu>Adobe AI Toolkit</Menu>
+            <Geometry>
+                <Size>
+                    <Width>420</Width>
+                    <Height>700</Height>
+                </Size>
+                <MinSize>
+                    <Width>280</Width>
+                    <Height>400</Height>
+                </MinSize>
+            </Geometry>
+            <Icons>
+                <Icon Type="N">assets/icon_normal.png</Icon>
+                <Icon Type="D">assets/icon_dark.png</Icon>
+                <Icon Type="N" HighDPI="true">assets/icon_normal_hires.png</Icon>
+                <Icon Type="D" HighDPI="true">assets/icon_dark_hires.png</Icon>
+            </Icons>
+        </UI>
+    </Extension>
+</ExtensionManifest>

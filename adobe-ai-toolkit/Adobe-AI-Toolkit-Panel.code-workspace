@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../Adobe-AI-Toolkit-Panel"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"liveServer.settings.port": 5501,
+		"liveServer.settings.multiRootWorkspaceName": "Adobe-AI-Toolkit-Panel"
+	}
+}

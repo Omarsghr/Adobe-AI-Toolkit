@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adobe AI Toolkit - Preview</title>
+
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';">
+
+    <style>
+        /* ============================================================================
+           Adobe AI Toolkit - Professional Design System
+           ========================================================================== */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            /* Color Palette - Adobe Professional */
+            --color-bg-primary: #1a1a1a;
+            --color-bg-secondary: #252525;
+            --color-bg-tertiary: #303030;
+            --color-bg-hover: #3a3a3a;
+
+            --color-border: #444444;
+            --color-border-light: #555555;
+
+            --color-text-primary: #ffffff;
+            --color-text-secondary: #b3b3b3;
+            --color-text-tertiary: #808080;
+
+            /* Accent Colors */
+            --color-accent-primary: #eb0029;
+            --color-accent-secondary: #00b4e6;
+            --color-accent-success: #00d084;
+            --color-accent-warning: #ffc107;
+            --color-accent-error: #ff6b6b;
+
+            /* Typography */
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Adobe Clean", Helvetica, Arial, sans-serif;
+            --font-weight-regular: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 600;
+            --font-weight-bold: 700;
+
+            --font-size-sm: 12px;
+            --font-size-base: 14px;
+            --font-size-md: 16px;
+            --font-size-lg: 18px;
+            --font-size-xl: 24px;
+            --font-size-2xl: 32px;
+
+            /* Spacing - 4px base unit */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 12px;
+            --spacing-lg: 16px;
+            --spacing-xl: 24px;
+            --spacing-2xl: 32px;
+            --spacing-3xl: 48px;
+
+            /* Border Radius */
+            --radius-sm: 2px;
+            --radius-md: 4px;
+            --radius-lg: 6px;
+
+            /* Shadows */
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.5);
+
+            /* Transitions */
+            --transition-fast: 150ms ease-in-out;
+            --transition-base: 250ms ease-in-out;
+            --transition-slow: 350ms ease-in-out;
+        }
+
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+        }
+
+        body {
+            background-color: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            font-family: var(--font-family);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-regular);
+            line-height: 1.5;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: var(--color-bg-primary);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-tertiary) 100%);
+            border-bottom: 1px solid var(--color-border);
+            padding: var(--spacing-xl) var(--spacing-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-content {
+            max-width: 100%;
+        }
+
+        .title {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            margin-bottom: var(--spacing-sm);
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            font-weight: var(--font-weight-regular);
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--spacing-xl);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xl);
+        }
+
+        .content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .content::-webkit-scrollbar-track {
+            background: var(--color-bg-primary);
+        }
+
+        .content::-webkit-scrollbar-thumb {
+            background: var(--color-border);
+            border-radius: var(--radius-md);
+        }
+
+        .content::-webkit-scrollbar-thumb:hover {
+            background: var(--color-border-light);
+        }
+
+        section {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .section-header {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .section-header h2 {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+        }
+
+        .section-description {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .upload-section {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .upload-area {
+            border: 2px dashed var(--color-border-light);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-3xl) var(--spacing-xl);
+            background-color: var(--color-bg-secondary);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--color-bg-tertiary) 0%, transparent 100%);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity var(--transition-base);
+        }
+
+        .upload-area:hover {
+            border-color: var(--color-accent-secondary);
+            background-color: var(--color-bg-tertiary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .upload-area:hover::before {
+            opacity: 0.5;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: var(--spacing-md);
+            display: block;
+        }
+
+        .upload-text {
+            font-size: var(--font-size-md);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .file-hint {
+            display: block;
+            font-size: var(--font-size-sm);
+            color: var(--color-text-tertiary);
+            margin-top: var(--spacing-sm);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md) var(--spacing-lg);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-semibold);
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            outline: none;
+            text-decoration: none;
+            white-space: nowrap;
+            flex: 1;
+            min-height: 40px;
+        }
+
+        .btn:focus-visible {
+            outline: 2px solid var(--color-accent-secondary);
+            outline-offset: 2px;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background-color: var(--color-accent-primary);
+            color: var(--color-text-primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: #cc0024;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-icon {
+            display: inline-flex;
+            font-size: 16px;
+        }
+
+        .btn-text {
+            display: inline;
+        }
+
+        .status-section {
+            flex-shrink: 0;
+        }
+
+        .status-container {
+            background-color: var(--color-bg-secondary);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+        }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .status-label {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-value {
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-accent-success);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .status-value::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background-color: var(--color-accent-success);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .status-details {
+            margin-top: var(--spacing-md);
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+        }
+
+        .status-value.status-loading {
+            color: var(--color-accent-warning);
+        }
+
+        .status-value.status-loading::before {
+            background-color: var(--color-accent-warning);
+            animation: spin 1s linear infinite;
+        }
+
+        .status-value.status-error {
+            color: var(--color-accent-error);
+        }
+
+        .status-value.status-error::before {
+            background-color: var(--color-accent-error);
+            animation: pulse 1s ease-in-out 2;
+        }
+
+        .info-section {
+            margin-top: auto;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-tertiary) 100%);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--color-accent-secondary), var(--color-accent-primary), transparent);
+        }
+
+        .info-title {
+            font-size: var(--font-size-md);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .info-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .info-list li {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .info-list li::before {
+            content: '✓';
+            color: var(--color-accent-success);
+            font-weight: var(--font-weight-bold);
+            flex-shrink: 0;
+        }
+
+        .footer {
+            border-top: 1px solid var(--color-border);
+            padding: var(--spacing-lg);
+            background-color: var(--color-bg-secondary);
+            text-align: center;
+        }
+
+        .footer-text {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-tertiary);
+            letter-spacing: 0.5px;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* File Confirmation & Error Sections */
+        .file-confirmation {
+            background: linear-gradient(135deg, rgba(0, 208, 132, 0.1) 0%, rgba(0, 180, 230, 0.05) 100%);
+            border: 1px solid var(--color-accent-success);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            animation: slideIn var(--transition-base);
+        }
+
+        .confirmation-content {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+        }
+
+        .confirmation-icon {
+            font-size: 24px;
+            color: var(--color-accent-success);
+            flex-shrink: 0;
+        }
+
+        .confirmation-text {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+        }
+
+        .confirmation-label {
+            font-size: var(--font-size-md);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+            margin: 0;
+        }
+
+        .confirmation-details {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            margin: 0;
+        }
+
+        .btn-change-file {
+            padding: var(--spacing-sm) var(--spacing-lg);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            background-color: var(--color-bg-tertiary);
+            color: var(--color-text-primary);
+            border: 1px solid var(--color-border-light);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .btn-change-file:hover {
+            background-color: var(--color-bg-hover);
+            border-color: var(--color-accent-secondary);
+        }
+
+        .file-error {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(255, 107, 107, 0.05) 100%);
+            border: 1px solid var(--color-accent-error);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-lg);
+            animation: slideIn var(--transition-base);
+        }
+
+        .error-icon {
+            font-size: 20px;
+            color: var(--color-accent-error);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .error-text {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-primary);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                padding: var(--spacing-lg);
+            }
+
+            .title {
+                font-size: var(--font-size-lg);
+            }
+
+            .content {
+                padding: var(--spacing-lg);
+                gap: var(--spacing-lg);
+            }
+
+            .upload-area {
+                padding: var(--spacing-2xl) var(--spacing-lg);
+            }
+
+            .upload-icon {
+                font-size: 36px;
+            }
+
+            .btn {
+                min-height: 36px;
+                padding: var(--spacing-sm) var(--spacing-md);
+                font-size: var(--font-size-sm);
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .status-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1 class="title">Adobe AI Toolkit</h1>
+                <p class="subtitle">Intelligent video editing powered by AI</p>
+            </div>
+        </header>
+
+        <main class="content">
+            <section class="upload-section">
+                <div class="section-header">
+                    <h2>Upload Media</h2>
+                    <p class="section-description">Select a video sequence to analyze and process</p>
+                </div>
+
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📹</div>
+                    <p class="upload-text">Drag your video here or click to browse</p>
+                    <input type="file" id="video-file-input" class="file-input" accept="video/*"
+                        aria-label="Select video file">
+                    <span class="file-hint">Supports MP4, MOV, MKV, and more</span>
+                </div>
+
+                <div id="file-confirmation" class="file-confirmation" style="display: none;">
+                    <div class="confirmation-content">
+                        <span class="confirmation-icon">✓</span>
+                        <div class="confirmation-text">
+                            <p class="confirmation-label">Video File Ready</p>
+                            <p id="confirmation-details" class="confirmation-details"></p>
+                        </div>
+                        <button id="change-file-btn" class="btn-change-file">Change</button>
+                    </div>
+                </div>
+
+                <div id="file-error" class="file-error" style="display: none;">
+                    <span class="error-icon">⚠</span>
+                    <p id="error-message" class="error-text"></p>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="upload-btn" class="btn btn-primary" disabled>
+                        <span class="btn-icon">⚡</span>
+                        <span class="btn-text">Start Processing</span>
+                    </button>
+                </div>
+            </section>
+
+            <section class="status-section">
+                <div class="status-container">
+                    <div class="status-header">
+                        <span class="status-label">Panel Status</span>
+                        <span id="status" class="status-value">Ready</span>
+                    </div>
+                    <div id="statusDetails" class="status-details"></div>
+                </div>
+
+                <div style="height: 12px;"></div>
+
+                <div class="status-container">
+                    <div class="status-header">
+                        <span class="status-label">Connectivity</span>
+                        <span id="connectivityStatus" class="status-value status-loading">Checking</span>
+                    </div>
+                    <div id="connectivityDetails" class="status-details"></div>
+                </div>
+            </section>
+
+            <section class="info-section">
+                <div class="info-card">
+                    <h3 class="info-title">Features</h3>
+                    <ul class="info-list">
+                        <li>Automatic scene detection</li>
+                        <li>AI-powered transcription</li>
+                        <li>Smart timeline markers</li>
+                        <li>Screenplay mapping</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p class="footer-text">Adobe AI Toolkit • Enhanced Creative Control</p>
+        </footer>
+    </div>
+
+    <script>
+        const MAX_FILE_SIZE = 5000 * 1024 * 1024; // 5GB
+
+        const uploadArea = document.getElementById("uploadArea");
+        const fileInput = document.getElementById("video-file-input");
+        const uploadBtn = document.getElementById("upload-btn");
+        const status = document.getElementById("status");
+        const statusDetails = document.getElementById("statusDetails");
+        const fileConfirmation = document.getElementById("file-confirmation");
+        const fileError = document.getElementById("file-error");
+        const changeFileBtn = document.getElementById("change-file-btn");
+        const connectivityStatusEl = document.getElementById("connectivityStatus");
+        const connectivityDetailsEl = document.getElementById("connectivityDetails");
+
+        // UI Interactions
+        uploadArea.addEventListener("click", () => fileInput.click());
+
+        uploadArea.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = "#00b4e6";
+            uploadArea.style.backgroundColor = "#303030";
+        });
+
+        uploadArea.addEventListener("dragleave", () => {
+            uploadArea.style.borderColor = "#555555";
+            uploadArea.style.backgroundColor = "#252525";
+        });
+
+        uploadArea.addEventListener("drop", (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = "#555555";
+            uploadArea.style.backgroundColor = "#252525";
+            const files = e.dataTransfer.files;
+            if (files.length > 0) handleFileSelection(files[0]);
+        });
+
+        fileInput.addEventListener("change", (e) => {
+            if (e.target.files.length > 0) handleFileSelection(e.target.files[0]);
+        });
+
+        changeFileBtn.addEventListener("click", () => {
+            fileInput.value = "";
+            fileConfirmation.style.display = "none";
+            fileError.style.display = "none";
+            uploadBtn.disabled = true;
+            uploadArea.style.display = "flex";
+            updateStatus("Ready", "default", "");
+        });
+
+        function isValidVideoFile(file) {
+            if (!file.type.startsWith("video/")) {
+                return { valid: false, error: "Invalid file type. Please upload a video file (MP4, MOV, MKV, etc.)" };
+            }
+            if (file.size > MAX_FILE_SIZE) {
+                const sizeMB = (MAX_FILE_SIZE / (1024 * 1024)).toFixed(0);
+                return { valid: false, error: `File too large. Maximum size is ${sizeMB}MB.` };
+            }
+            return { valid: true };
+        }
+
+        function handleFileSelection(file) {
+            const validation = isValidVideoFile(file);
+            if (!validation.valid) {
+                showError(validation.error);
+                fileInput.value = "";
+                return;
+            }
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            fileInput.files = dataTransfer.files;
+
+            showFileConfirmation(file);
+            fileError.style.display = "none";
+            uploadBtn.disabled = false;
+        }
+
+        function showFileConfirmation(file) {
+            const fileName = file.name;
+            const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+            const fileType = file.type.split("/")[1] ? file.type.split("/")[1].toUpperCase() : "VIDEO";
+            document.getElementById("confirmation-details").innerHTML = `<strong>${fileName}</strong> • ${fileSize} MB • ${fileType}`;
+            uploadArea.style.display = "none";
+            fileConfirmation.style.display = "block";
+        }
+
+        function showError(message) {
+            document.getElementById("error-message").textContent = message;
+            fileError.style.display = "block";
+            fileConfirmation.style.display = "none";
+            uploadArea.style.display = "flex";
+        }
+
+        function updateStatus(message, type = "default", details = "") {
+            status.textContent = message;
+            status.className = "status-value";
+            if (type === "loading") status.classList.add("status-loading");
+            else if (type === "error") status.classList.add("status-error");
+            else if (type === "success") status.classList.add("status-success");
+            statusDetails.textContent = details;
+        }
+
+        // --- BACKEND PROBE (PORT 8005) ---
+        async function probeBackendConnectivity() {
+            const probes = [
+                { url: "http://localhost:8005/health", label: "/health" },
+                { url: "http://localhost:8005/", label: "/" }
+            ];
+
+            connectivityStatusEl.textContent = "Checking";
+            connectivityStatusEl.className = "status-value status-loading";
+            connectivityDetailsEl.textContent = "Probing Master Engine on port 8005...";
+
+            let lastError = null;
+            for (const probe of probes) {
+                try {
+                    const res = await fetch(probe.url, { method: "GET" });
+                    if (res.ok) {
+                        connectivityStatusEl.textContent = "Connected";
+                        connectivityStatusEl.className = "status-value status-success";
+                        connectivityDetailsEl.textContent = `Gamer PC Engine reachable (${probe.label}). HTTP ${res.status}`;
+                        return true;
+                    }
+                    lastError = `HTTP ${res.status} at ${probe.label}`;
+                } catch (e) {
+                    lastError = `Fetch failed at ${probe.label}: ${e.message || String(e)}`;
+                }
+            }
+
+            connectivityStatusEl.textContent = "Disconnected";
+            connectivityStatusEl.className = "status-value status-error";
+            connectivityDetailsEl.textContent = `${lastError || "Check if FastAPI / Uvicorn is up on port 8005"}`;
+            return false;
+        }
+
+        // Run connectivity check right away
+        probeBackendConnectivity();
+
+        // --- PIPELINE HANDLER ---
+        uploadBtn.addEventListener("click", async () => {
+            const videoFile = fileInput.files[0];
+            if (!videoFile) {
+                updateStatus("Error", "error", "No file selected. Please choose a video first.");
+                return;
+            }
+
+            updateStatus("Processing", "loading", `Uploading ${videoFile.name} to Gamer PC Pipeline (8005)...`);
+
+            const formData = new FormData();
+            formData.append("file", videoFile);
+
+            try {
+                // Trigger the actual master pipeline logic
+                const backend = await fetch("http://localhost:8005/process-from-adobe", {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (!backend.ok) {
+                    throw new Error(`Server responded with HTTP status ${backend.status}`);
+                }
+
+                const serverResponse = await backend.json();
+
+                if (serverResponse.status !== "success") {
+                    throw new Error(serverResponse.detail || "Pipeline encountered an processing issue.");
+                }
+
+                const timeline = serverResponse.data.timeline_data;
+                console.log("🔥 Payload Received:", timeline);
+
+                // Safe Guard check for Adobe Environment vs Normal Browser Testing
+                if (typeof app === 'undefined' || !app.executeAsModal) {
+                    console.log("💡 Browser Mode Sandbox: Request went through flawlessly!");
+                    updateStatus("Complete (Sandbox)", "success", `Pipeline success! Received structural metadata via server JSON payload.`);
+                    return;
+                }
+
+                // If running inside Premiere Pro UXP environment, inject markers
+                updateStatus("Applying Engine Rules", "loading", "Executing cuts, padding, and transitions in Timeline...");
+
+                await app.executeAsModal(async () => {
+                    const activeSequence = app.project.activeSequence;
+                    if (!activeSequence) {
+                        updateStatus("No Active Timeline", "error", "Please open a sequence in Premiere Pro.");
+                        return;
+                    }
+
+                    if (timeline.cuts_and_trims && timeline.cuts_and_trims.length > 0) {
+                        timeline.cuts_and_trims.forEach(cut => {
+                            let cutMarker = activeSequence.markers.createMarker(cut.start_timestamp);
+                            cutMarker.name = `CUT: ${cut.action_execution}`;
+                            cutMarker.comments = `End: ${cut.end_timestamp}`;
+                        });
+                    }
+
+                    if (timeline.video_track_1_vocals && timeline.video_track_1_vocals.length > 0) {
+                        timeline.video_track_1_vocals.forEach(vocal => {
+                            let subMarker = activeSequence.markers.createMarker(vocal.padded_start_time);
+                            subMarker.name = "SUBTITLE";
+                            subMarker.comments = vocal.subtitle_string;
+                        });
+                    }
+
+                    const assetsCount = timeline.video_track_2_b_roll_images ? timeline.video_track_2_b_roll_images.length : 0;
+                    updateStatus("Complete", "success", `Timeline fully synced. Automated asset mapping injected into sequence.`);
+                }, { "commandName": "Apply AI Screenplay Map" });
+
+            } catch (error) {
+                console.error("Pipeline failure:", error);
+                updateStatus("Connection Failed", "error", `Communication breakdown: ${error.message}`);
+            }
+        });
+    </script>
+</body>
+
+</html>
