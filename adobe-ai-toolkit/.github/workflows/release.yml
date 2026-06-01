@@ -1,0 +1,13 @@
+- name: Zip the Extension
+        uses: thedoctor0/zip-release@0.7.5
+        with:
+          type: 'zip'
+          filename: 'Adobe-AI-Toolkit.zip'
+          path: 'dist/' # Path to your build folder
+
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "Adobe-AI-Toolkit.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: v1.0.${{ github.run_number }}
