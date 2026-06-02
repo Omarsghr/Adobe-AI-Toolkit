@@ -1,0 +1,227 @@
+I'll scan the project's src/ tree to find relevant files, then open the important modules (orchestrator, local processing, API integrations) and summarize what to change or add per the plan. I'll start by listing files under adobe-ai-toolkit/src/.
+
+
+I'll review what I found in your project and give a prioritized, actionable list of exactly what to change or add to make the repo match the Hybrid Engine plan you described. First a short checklist of what I'll cover, then the findings and per-file, line-aware recommendations plus next steps you can take (or I can implement for you).
+Checklist
+ Map current code that handles transcription, LLM/director logic, orchestration.
+ Highlight mismatches with the plan (local-first transcription, cloud LLM adapter, orchestrator architecture, resiliency).
+ Provide per-file and per-module changes to make (what to add/replace).
+ Provide recommended new files and project layout under src/.
+ Provide next steps and prioritization (what to implement first).
+What I scanned
+Found key files under adobe-ai-toolkit:
+src/transcription/local_whisper.py
+src/transcription/transcription_manager.py
+src/transcription/groq_clients.py
+src/signal_analysis/signal_processor.py
+src/ai_logic/keyword_director.py
+src/ai_logic/visualist_generator.py
+src/database/init_db.py
+main pipeline orchestrator: top-level main.py (runs scripts via subprocess)
+top-level helpers: master_glue.py, main_pipeline.py, server.py (not yet examined in detail)
+These show the project already has director logic, DB persistence, and a transcription pipeline — but transcription uses Groq (cloud) and scripts are run via subprocess in main.py.
+High-level gap summary vs your Hybrid Engine plan
+Transcription: currently uses Groq cloud API (multiple key-rotation logic). The plan requires local transcription (Whisper / faster-whisper) to keep cost = $0 and preserve privacy. Replace cloud-first transcription with a local engine wrapper around FFmpeg + Whisper.
+Cloud LLM orchestration: director code calls specific cloud providers directly (NVIDIA/OpenAI) and also has a local Ollama placeholder; there is no single cloud_service.py adapter layer to switch providers or fallback policies.
+Orchestration: main.py launches scripts via subprocess in sequence. That works, but makes error handling, timeouts, and richer orchestration harder. Prefer a JobRunner/Orchestrator inside src/orchestrator/ that imports modules and manages job lifecycles (timeouts, retries, fallbacks).
+Config and secrets: many hardcoded absolute paths and direct dotenv loading in modules (e.g., ROOT_DIR = "c:/Users/dell/OneDrive/Desktop/.vscode" and load_dotenv(dotenv_path=...)). Centralize configuration with pydantic.BaseSettings (in src/utils/config.py) and read secrets from env or secret stores for production.
+Resiliency: missing structured retry/fallback patterns/circuit-breaker wrappers around cloud calls and subprocess FFmpeg calls (timeouts and watchdogs).
+Project structure: needs clearer separation along the lines of the plan: api/, local/, orchestrator/, models/, utils/, services/.
+Concrete findings and what to change (file-by-file, with exact guidance)
+src/transcription/local_whisper.py
+What I found:
+It uses Groq cloud client and iterates up to 15 keys to bypass rate limits (lines 3–11, 26–52). It uploads audio to Groq Cloud and writes JSON output (lines 34–49).
+Why change:
+This file contradicts your requirement to keep transcription local and private.
+The multi-key rotation is fragile and risky (you should not implement key-bypass techniques).
+Recommended changes:
+Replace this module with a local transcription wrapper that:
+Accepts an audio path and returns structured output: full text, segments with timestamps, confidence.
+Uses a local model via faster-whisper or whisperx (GPU-aware) or openai/whisper offline if you prefer.
+Uses subprocess + ffmpeg or ffmpeg-python to extract/normalize audio before transcription.
+Use a config flag fallback_to_cloud=False; if enabled and local transcription fails with user consent, then fallback to cloud.
+Remove or disable Groq multi-key logic and put any cloud fallback inside a controlled, consented flow.
+Suggested new API (module src/local/local_engine.py):
+LocalEngine.extract_audio(video_path, out_audio_path, sample_rate=16000)
+LocalEngine.transcribe(audio_path, model="small", use_gpu=False, timeout=600) -> {text, segments}
+LocalEngine.get_duration(video_path) -> float
+Implement subprocess timeouts, process cleanup, and resource caps.
+src/transcription/transcription_manager.py
+What I found:
+This routes audio to Groq via a custom key-rotator GroqKeyRotator and posts to Groq API (lines 16–72, 81–107). It also writes the transcript to a SQLite DB (lines 128–148).
+It uses an absolute ROOT_DIR variable set to a local path and loads .env from that path (lines 9–13).
+Why change:
+Uses cloud-first transcription and hardcoded paths. We must replace cloud-first with local first.
+Recommended changes:
+Refactor this file to be a thin orchestration layer that:
+Accepts job parameters (audio_path, job_id).
+Instantiates LocalEngine and calls LocalEngine.transcribe().
+If local fails and user allows fallback_to_cloud, call CloudService.transcribe() (if you add that).
+Persist transcripts to DB via a DB helper (src/database/init_db.py) using central config for DB path.
+Remove GroqKeyRotator; if you must use Groq as optional fallback, create a GroqAdapter inside src/api/providers/groq_adapter.py and call via a CloudService adapter with proper retry/backoff and a single key.
+Replace absolute ROOT_DIR references with a central config object.
+src/ai_logic/keyword_director.py
+What I found:
+Director already supports LOCAL mode via ai_mode = os.getenv("AI_MODE", "CLOUD").upper() and call_local_ollama_director() (lines 81–85, 51–59, 170–175).
+When in CLOUD mode it calls NVIDIA via an OpenAI-compatible client (lines 181–194) and expects NVIDIA_API_KEY.
+What to modify:
+Keep the director logic, but remove direct cloud calls from inside the module and instead call a CloudService:
+Create src/api/cloud_service.py with CloudService.plan() and CloudService.generate().
+Keyword director should call cloud_service.plan(context) or cloud_service.generate(...) and handle exceptions and fallbacks (local Ollama then Cloud providers).
+Make DB access and paths use a config module rather than absolute paths (DB_PATH should come from src/utils/config.py).
+Orchestration — top-level main.py
+What I found:
+main.py runs component scripts by building command lines and calling subprocess.run() for each script (lines 10–45 and sequence at 57–90).
+This makes pass-through arguments and inter-script data sharing dependent on DB files and files on disk.
+Recommended change:
+Replace or supplement the subprocess-runner approach with an orchestrator in src/orchestrator/:
+Add src/orchestrator/job_runner.py with a JobRunner class that:
+Receives job JSON from collector (Premiere Pro) as a Python dict.
+Validates with pydantic schemas (src/models/schemas.py).
+Runs LocalEngine work (extract audio, transcribe, extract frames) with timeouts and concurrency limits.
+Calls CloudService for planning and creative writing with fallbacks.
+Orchestrates FFmpeg editing steps via LocalEngine for final assembly.
+Saves resulting artifacts and job state in DB and returns status.
+Create src/orchestrator/main.py as either:
+CLI runner (for single-job local testing), and/or
+a FastAPI HTTP endpoint to receive jobs from a Premiere collector (recommended long-term).
+At minimum, make main.py import and call JobRunner rather than spawning subprocesses so exceptions/timeouts can be handled cleanly.
+Add CloudService + provider adapters
+New files to add:
+src/api/cloud_service.py — CloudService class to choose adapter based on role (planning vs creative), implement timeouts, retry/backoff, and fallback chains.
+src/api/providers/openai_adapter.py — wrapper for OpenAI calls (chat, completions) with timeouts and tenacity retry.
+src/api/providers/anthropic_adapter.py — wrapper for Anthropic/Claude.
+src/api/providers/groq_adapter.py — optional, only as a carefully governed fallback (not for primary transcription).
+Behavior:
+CloudService.get_provider_for_role(role) -> Adapter
+CloudService.plan(context) calls preferred adapter (e.g., Claude 3.5) with specific system prompts and per-call timeouts.
+Use exponential backoff, limit retries, and a circuit-breaker to disable failing provider for a period.
+Centralized config and logging
+Add:
+src/utils/config.py — pydantic BaseSettings class (env-based config). Centralize DB path, storage path, model names, threshold settings, API keys (but do not print them).
+src/utils/logging.py — set up structured logging (job_id in every log).
+Replace current uses of load_dotenv() scattered across files by reading config in the application entry point and passing config objects where needed.
+Database and schema handling
+Current SQLite usage is ad-hoc (different modules create different tables).
+Add:
+src/database/db.py — simple DB helper to get connection, run migrations, ensure consistent schema (tables for transcripts, silence_map, word_timestamps, style_templates, job_status).
+Move creation / table DDL to a single place (init_db.py can become the migration script).
+Add pydantic models in src/models/schemas.py for incoming Premiere JSON, job metadata, and cloud responses.
+Resiliency patterns to add
+LocalEngine: subprocess timeouts, kill on hang, use -nostdin and -hide_banner for ffmpeg, watchdog for no-progress kills.
+CloudService: per-request timeouts, tenacity retries with jitter, and a circuit-breaker (pybreaker) or simple counter.
+Orchestrator: global job timeout (configurable), per-step retries, and ability to mark job as DEGRADED and continue (produce partial outputs).
+Observability: structured logs, job-specific log file or DB field, metrics counters.
+Remove / replace suspicious patterns
+Multi-key Groq rotation (15 keys) to “bypass rate limits” must be removed. It’s both brittle and a policy concern.
+Avoid hard-coded absolute paths like "c:/Users/dell/OneDrive/Desktop/.vscode" — use config.
+Avoid using load_dotenv() in many modules — load once at app entry.
+Tests and CI
+Add tests under src/tests/:
+test_local_engine.py: run extract_audio and a known tiny audio clip and assert text or metadata.
+test_cloud_service.py: mock adapters and assert fallback policies.
+test_job_runner.py: run a sample JSON through a dry-run mode (no cloud calls).
+Add GitHub Actions job to run tests and lint.
+Suggested new directory tree (adapted from plan, mapped to your repo)
+adobe-ai-toolkit/
+src/
+api/
+cloud_service.py
+providers/
+openai_adapter.py
+anthropic_adapter.py
+groq_adapter.py (optional fallback)
+local/
+local_engine.py # FFmpeg + Whisper wrappers
+ffmpeg_utils.py
+whisper_wrapper.py
+orchestrator/
+main.py # CLI / FastAPI entry
+job_runner.py
+queue_worker.py # optional: Redis/Celery worker
+models/
+schemas.py
+types.py
+transcription/
+(refactor) transcription_manager.py -> thin orchestrator that calls local_engine
+(remove/repurpose) local_whisper.py -> archive or convert to groq_adapter if required
+ai_logic/
+keyword_director.py # refactor to call CloudService, not raw SDK
+visualist_generator.py
+database/
+db.py # DB helper and migrations
+init_db.py
+utils/
+config.py # pydantic settings
+logging.py
+retry_utils.py
+services/
+storage.py
+notifier.py
+tests/
+test_local_engine.py
+test_cloud_service.py
+test_orchestrator.py
+Small, specific change recommendations you can apply now (priority order)
+HIGH PRIORITY — Move transcription to local:
+Create src/local/local_engine.py implementing:
+extract_audio(video_path, out_audio_path)
+transcribe(audio_path, model="small", use_gpu=False)
+Use faster-whisper if available; fallback to whisper python package.
+Refactor src/transcription/transcription_manager.py to call LocalEngine.transcribe() instead of Groq. Keep DB-save logic, but use config for DB path.
+Remove multi-key rotation and the 15-key approach in local_whisper.py. If you still want cloud fallback, create a src/api/providers/groq_adapter.py and call from CloudService.
+HIGH PRIORITY — Add CloudService adapter layer:
+Add src/api/cloud_service.py that selects provider by role (planning -> Claude or Anthropic, creative -> GPT-4o or OpenAI). Implement role->provider mapping from config.
+Implement adapters for OpenAI + Anthropic; all adapters should:
+Accept prompt/system messages
+Return unified outputs (text, tokens, metadata)
+Enforce configurable timeouts and use a retry decorator (tenacity)
+MEDIUM PRIORITY — Orchestrator:
+Add src/orchestrator/job_runner.py to run a single job end-to-end. Replace main.py subprocess-style calls with either:
+A CLI wrapper that imports JobRunner for local jobs
+A FastAPI server (preferred) for receiving Premiere collector JSON via a webhook
+Implement job-scoped logging, timeouts, and status persistence.
+MEDIUM PRIORITY — Centralize config & logging:
+Add src/utils/config.py (pydantic.BaseSettings). Replace hard-coded env loading and absolute paths across modules.
+Add src/utils/logging.py to configure structured logging early during app startup.
+MEDIUM/LOW PRIORITY — DB & schema improvements:
+Consolidate DB creation to src/database/db.py and ensure consistent table names: transcripts, silence_map, word_timestamps, style_templates, jobs, job_artifacts.
+LOW PRIORITY — Tests & CI:
+Add unit tests and a GitHub Actions workflow to run them. Add a requirements.txt or update pyproject.toml with dependencies:
+pydantic, fastapi, uvicorn, httpx, openai, anthropic, tenacity, ffmpeg-python, faster-whisper (or whisperx), pytest, pytest-asyncio, python-dotenv (dev), structlog.
+Example important edits (concrete):
+In src/transcription/transcription_manager.py:
+Replace lines 55–111 (Groq upload & key rotation) with:
+call = LocalEngine.transcribe(AUDIO_PATH)
+if call returns None -> if config.allow_cloud_fallback: call CloudService.transcribe_fallback()
+persist transcript to DB (existing code does this)
+Replace the absolute ROOT_DIR and load_dotenv call with:
+from src.utils.config import Settings; settings = Settings()
+AUDIO_PATH = settings.default_audio_path; DB_PATH = settings.database_path
+In src/ai_logic/keyword_director.py:
+Replace the direct cloud call at lines 180–195 with:
+from src.api.cloud_service import CloudService
+cs = CloudService(settings)
+raw_content = cs.plan(context_payload) # or cs.generate(...)
+director_screenplay = clean_llm_json_output(raw_content)
+Security & privacy notes (must do)
+Do not upload user media to cloud transcription without explicit consent.
+Keep secrets in env or a managed secret store (Azure Key Vault / AWS Secrets Manager).
+Do not use multi-key rotation for bypassing rate limits.
+Estimated effort & order to implement (rough)
+0.5 day: Create src/utils/config.py and centralize settings; refactor modules to read settings rather than hard-coded paths.
+1.0 day: Implement src/local/local_engine.py (FFmpeg wrapper + faster-whisper wrapper) and refactor transcription_manager.py to call it.
+0.5 day: Add CloudService skeleton and a single adapter (OpenAI), plus retry/timeouts.
+1.0 day: Implement src/orchestrator/job_runner.py, convert main.py to call JobRunner, add job-level logging/timeouts.
+0.5–1.0 day: Add DB helper and migrate/create consistent schema.
+0.5 day: Add basic unit tests for local_engine and job_runner dry-run.
+0.5 day: Misc: add requirements, README updates, CI.
+Would you like me to:
+A) Generate the initial skeleton files and refactor transcription_manager.py to call a local engine stub (I will create src/local/local_engine.py, src/utils/config.py, and update transcription_manager.py to use them), OR
+B) Only produce full edits for the local_engine.py and cloud_service.py modules so you can review before we wire them into the orchestrator, OR
+C) Just keep giving guidance and let you implement locally?
+If you pick A or B I will:
+Create the files (skeletons/working minimal implementations) in your repo under adobe-ai-toolkit/src/.
+Run tests (unit or dry-run) where possible and report back any lint/trace errors.
+Iterate until LocalEngine + TranscriptionManager work locally (i.e., local transcription path is operational).
+Which option do you want me to implement now?

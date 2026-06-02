@@ -1,0 +1,8 @@
+pydantic
+pydantic-settings
+faster-whisper
+ffmpeg-python
+openai
+anthropic
+tenacity
+python-dotenv
