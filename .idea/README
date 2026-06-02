@@ -1,0 +1,47 @@
+# 🎬 AI-Powered Video Editing Toolkit
+
+The **AI-Powered Video Editing Toolkit** is a professional-grade backend orchestration system designed to automate video editing workflows.
+
+---
+
+## ⚙️ System Overview
+This toolkit functions as an automated assembly line that transforms raw video into polished content using a **Local-First** philosophy. By combining local processing for resource-heavy tasks and cloud-based AI for intelligent decision-making, the system minimizes costs while maximizing performance and privacy.
+
+---
+
+## 🚀 The Core Workflow
+The workflow is managed by the `JobRunner`, which executes the following pipeline:
+
+1.  **📥 Ingestion:** Monitors `input_queue/` for a `source_video.mp4` and a `job_data.json` "recipe".
+2.  **🎙️ Transcription (Local Engine):** Extracts audio and runs `faster-whisper` locally. **Privacy-first, $0 cost.**
+3.  **🧠 Planning (Cloud Service):** Sends the transcript + "recipe" to an LLM (OpenAI/Anthropic) to generate a precise "Edit Map."
+4.  **💾 Persistence:** Saves all artifacts (`transcripts.json`, `plan.json`) to `outputs/jobs/<job_id>/`.
+
+---
+
+## 🏗️ Architecture Highlights
+
+### 📋 The "Recipe" (JSON Contract)
+The `job_data.json` acts as the instruction manual for the AI, containing:
+* **Persona/Template:** Defines the "vibe" and structure.
+* **Edit Actions:** Explicit user-defined constraints (e.g., cut silence).
+* **Metadata:** Ensures correct routing and file naming.
+
+### 🔌 Adapter Pattern
+The backend uses an **Adapter Pattern** to remain provider-agnostic. The core system ("The Brain") communicates through standardized adapters, making it trivial to switch between OpenAI, Anthropic, or future models.
+
+---
+
+## 💡 Operational Strategy
+* **🧪 Mock-First Development:** Test the entire pipeline end-to-end without needing internet, keys, or cloud costs.
+* **💰 Cost Management:** Local transcription + minimal token usage for planning = **pennies per video**.
+* **🛡️ Resilience:** Robust error handling ensures that network blips don't crash your pipeline.
+
+---
+
+## 📂 Project Structure
+* `src/local/` - Audio/video processing & local transcription.
+* `src/api/` - CloudService & AI provider adapters.
+* `src/orchestrator/` - `JobRunner` (the master controller).
+* `src/utils/` - Config & environment management.
+* `outputs/` - Storage for generated artifacts.
