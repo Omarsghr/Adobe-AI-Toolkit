@@ -5,6 +5,7 @@
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
       <excludeFolder url="file://$MODULE_DIR$/.vscode/Adobe-AI-Toolkit-Panel/.venv" />
       <excludeFolder url="file://$MODULE_DIR$/adobe-ai-toolkit/Adobe-AI-Toolkit-Panel/.venv" />
+      <excludeFolder url="file://$MODULE_DIR$/adobe-ai-toolkit/.venv" />
     </content>
     <orderEntry type="jdk" jdkName="uv (DevProjects)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
