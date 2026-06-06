@@ -2,9 +2,9 @@ name: Adobe AI Toolkit Build
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build-and-test:
@@ -16,7 +16,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Install dependencies
         run: npm install
@@ -24,8 +24,8 @@ jobs:
       - name: Run Build
         env:
           # These connect the GitHub Secrets to environment variables for the build process
-          ADOBE_CLIENT_ID: ${{ ADOBE_DEVELOPER_CONSOLE }}
-          ADOBE_CLIENT_SECRET: ${{ A162352719823874938}}
+          ADOBE_CLIENT_ID: ${{ secrets.ADOBE_CLIENT_ID }}
+          ADOBE_CLIENT_SECRET: ${{ secrets.ADOBE_CLIENT_SECRET }}
         run: npm run build
 
       - name: Archive production artifacts

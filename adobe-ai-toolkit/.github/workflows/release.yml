@@ -1,13 +1,38 @@
-- name: Zip the Extension
+name: Release Adobe AI Toolkit
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Zip the Extension
         uses: thedoctor0/zip-release@0.7.5
         with:
-          type: 'zip'
-          filename: 'Adobe-AI-Toolkit.zip'
-          path: 'dist/' # Path to your build folder
+          type: "zip"
+          filename: "Adobe-AI-Toolkit.zip"
+          path: "dist/"
 
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         with:
           artifacts: "Adobe-AI-Toolkit.zip"
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag: v1.0.${{ github.run_number }}
+          tag: ${{ github.ref_name }}
