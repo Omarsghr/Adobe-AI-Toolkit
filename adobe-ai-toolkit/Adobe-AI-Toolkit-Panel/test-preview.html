@@ -558,6 +558,223 @@
             line-height: 1.5;
         }
 
+        /* Prompt Input Section */
+        .prompt-section {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .prompt-label {
+            font-size: var(--font-size-md);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+        }
+
+        .prompt-input-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .prompt-textarea {
+            background-color: var(--color-bg-secondary);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            color: var(--color-text-primary);
+            font-family: var(--font-family);
+            font-size: var(--font-size-base);
+            resize: vertical;
+            min-height: 100px;
+            max-height: 200px;
+            transition: all var(--transition-base);
+        }
+
+        .prompt-textarea:focus {
+            outline: none;
+            border-color: var(--color-accent-secondary);
+            background-color: var(--color-bg-tertiary);
+            box-shadow: 0 0 8px rgba(0, 180, 230, 0.2);
+        }
+
+        .prompt-textarea::placeholder {
+            color: var(--color-text-tertiary);
+        }
+
+        .prompt-char-count {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            text-align: right;
+        }
+
+        /* Templates and Actions Section */
+        .templates-actions-section {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .templates-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .templates-title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+        }
+
+        .templates-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .templates-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .templates-list::-webkit-scrollbar-track {
+            background: var(--color-bg-primary);
+        }
+
+        .templates-list::-webkit-scrollbar-thumb {
+            background: var(--color-border);
+            border-radius: var(--radius-md);
+        }
+
+        .template-item {
+            background-color: var(--color-bg-secondary);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            cursor: pointer;
+            transition: all var(--transition-base);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .template-item:hover {
+            background-color: var(--color-bg-tertiary);
+            border-color: var(--color-accent-secondary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .template-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .template-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+        }
+
+        .template-name {
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+        }
+
+        .template-description {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .template-action {
+            font-size: var(--font-size-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
+            background-color: var(--color-accent-primary);
+            color: var(--color-text-primary);
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            flex-shrink: 0;
+        }
+
+        .template-action:hover {
+            background-color: #cc0024;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .template-action:active {
+            transform: translateY(0);
+        }
+
+        /* Zoom Controls */
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            background-color: var(--color-bg-secondary);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-sm);
+        }
+
+        .zoom-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background-color: var(--color-bg-tertiary);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--color-text-primary);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-size: var(--font-size-base);
+        }
+
+        .zoom-btn:hover {
+            background-color: var(--color-bg-hover);
+            border-color: var(--color-accent-secondary);
+        }
+
+        .zoom-btn:active {
+            transform: scale(0.95);
+        }
+
+        .zoom-value {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-primary);
+            min-width: 45px;
+            text-align: center;
+        }
+
+        .zoom-reset-btn {
+            font-size: var(--font-size-xs);
+            padding: 4px 8px;
+        }
+
+        /* Layout adjustments for zoom */
+        body.zoom-90 {
+            font-size: calc(var(--font-size-base) * 0.9);
+        }
+
+        body.zoom-100 {
+            font-size: var(--font-size-base);
+        }
+
+        body.zoom-110 {
+            font-size: calc(var(--font-size-base) * 1.1);
+        }
+
+        body.zoom-125 {
+            font-size: calc(var(--font-size-base) * 1.25);
+        }
+
         @media (max-width: 600px) {
             .header {
                 padding: var(--spacing-lg);
@@ -594,6 +811,11 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
+
+            .zoom-controls {
+                flex-direction: column;
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -602,12 +824,43 @@
     <div class="container">
         <header class="header">
             <div class="header-content">
-                <h1 class="title">Adobe AI Toolkit</h1>
-                <p class="subtitle">Intelligent video editing powered by AI</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px;">
+                    <div>
+                        <h1 class="title">Adobe AI Toolkit</h1>
+                        <p class="subtitle">Intelligent video editing powered by AI</p>
+                    </div>
+                    <div class="zoom-controls">
+                        <button class="zoom-btn" id="zoom-out-btn" title="Zoom Out">−</button>
+                        <span class="zoom-value" id="zoom-level">100%</span>
+                        <button class="zoom-btn" id="zoom-in-btn" title="Zoom In">+</button>
+                        <button class="zoom-btn zoom-reset-btn" id="zoom-reset-btn" title="Reset Zoom">Reset</button>
+                    </div>
+                </div>
             </div>
         </header>
 
         <main class="content">
+            <!-- Prompt Input Section -->
+            <section class="prompt-section">
+                <label class="prompt-label">Enter Your Prompt</label>
+                <div class="prompt-input-wrapper">
+                    <textarea id="prompt-textarea" class="prompt-textarea" 
+                        placeholder="Describe what you want to do with your video. Be specific about effects, timing, transitions, or editing style..." 
+                        aria-label="Prompt input"></textarea>
+                    <span class="prompt-char-count"><span id="char-count">0</span>/500 characters</span>
+                </div>
+            </section>
+
+            <!-- Templates and Actions Section -->
+            <section class="templates-actions-section">
+                <div class="templates-header">
+                    <h2 class="templates-title">Templates & Actions</h2>
+                </div>
+                <div class="templates-list" id="templates-list">
+                    <!-- Templates will be populated by JavaScript -->
+                </div>
+            </section>
+
             <section class="upload-section">
                 <div class="section-header">
                     <h2>Upload Media</h2>
@@ -686,6 +939,41 @@
 
     <script>
         const MAX_FILE_SIZE = 5000 * 1024 * 1024; // 5GB
+        const MAX_PROMPT_LENGTH = 500;
+
+        // Templates data
+        const templates = [
+            {
+                id: 'fast-cuts',
+                name: 'Fast Cuts & Transitions',
+                description: 'Dynamic video with quick cuts and smooth transitions',
+                icon: '⚡'
+            },
+            {
+                id: 'slow-motion',
+                name: 'Slow Motion Effect',
+                description: 'Highlight key moments with slow motion playback',
+                icon: '🎬'
+            },
+            {
+                id: 'color-grade',
+                name: 'Color Grading',
+                description: 'Professional color correction and grading',
+                icon: '🎨'
+            },
+            {
+                id: 'text-overlay',
+                name: 'Text Overlays',
+                description: 'Add captions, titles, and text elements',
+                icon: '📝'
+            },
+            {
+                id: 'music-sync',
+                name: 'Music Sync',
+                description: 'Synchronize video with audio beats',
+                icon: '🎵'
+            }
+        ];
 
         const uploadArea = document.getElementById("uploadArea");
         const fileInput = document.getElementById("video-file-input");
@@ -697,6 +985,99 @@
         const changeFileBtn = document.getElementById("change-file-btn");
         const connectivityStatusEl = document.getElementById("connectivityStatus");
         const connectivityDetailsEl = document.getElementById("connectivityDetails");
+
+        // Prompt elements
+        const promptTextarea = document.getElementById("prompt-textarea");
+        const charCount = document.getElementById("char-count");
+        const templatesList = document.getElementById("templates-list");
+
+        // Zoom elements
+        const zoomOutBtn = document.getElementById("zoom-out-btn");
+        const zoomInBtn = document.getElementById("zoom-in-btn");
+        const zoomResetBtn = document.getElementById("zoom-reset-btn");
+        const zoomLevelDisplay = document.getElementById("zoom-level");
+
+        // Zoom state
+        let currentZoom = 100;
+        const zoomLevels = [90, 100, 110, 125];
+
+        // Initialize templates
+        function initializeTemplates() {
+            templatesList.innerHTML = '';
+            templates.forEach(template => {
+                const templateItem = document.createElement('div');
+                templateItem.className = 'template-item';
+                templateItem.innerHTML = `
+                    <span class="template-icon">${template.icon}</span>
+                    <div class="template-content">
+                        <div class="template-name">${template.name}</div>
+                        <div class="template-description">${template.description}</div>
+                    </div>
+                    <button class="template-action" data-template-id="${template.id}">Apply</button>
+                `;
+                templatesList.appendChild(templateItem);
+
+                // Add click handler to Apply button
+                templateItem.querySelector('.template-action').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    applyTemplate(template.id, template.name);
+                });
+            });
+        }
+
+        // Apply template
+        function applyTemplate(templateId, templateName) {
+            const prompt = promptTextarea.value;
+            if (!prompt.trim()) {
+                alert('Please enter a prompt before applying a template.');
+                return;
+            }
+            console.log(`Applied template: ${templateName} (${templateId})`);
+            console.log(`Prompt: ${prompt}`);
+            updateStatus("Template Applied", "success", `Using "${templateName}" template with your prompt.`);
+        }
+
+        // Prompt handling
+        promptTextarea.addEventListener('input', (e) => {
+            const length = e.target.value.length;
+            charCount.textContent = Math.min(length, MAX_PROMPT_LENGTH);
+            if (length > MAX_PROMPT_LENGTH) {
+                promptTextarea.value = promptTextarea.value.substring(0, MAX_PROMPT_LENGTH);
+            }
+        });
+
+        // Zoom functionality
+        function updateZoom(level) {
+            currentZoom = level;
+            const zoomClass = `zoom-${level}`;
+            document.body.className = zoomClass;
+            zoomLevelDisplay.textContent = `${level}%`;
+            localStorage.setItem('panelZoom', level);
+        }
+
+        zoomOutBtn.addEventListener('click', () => {
+            const currentIndex = zoomLevels.indexOf(currentZoom);
+            if (currentIndex > 0) {
+                updateZoom(zoomLevels[currentIndex - 1]);
+            }
+        });
+
+        zoomInBtn.addEventListener('click', () => {
+            const currentIndex = zoomLevels.indexOf(currentZoom);
+            if (currentIndex < zoomLevels.length - 1) {
+                updateZoom(zoomLevels[currentIndex + 1]);
+            }
+        });
+
+        zoomResetBtn.addEventListener('click', () => {
+            updateZoom(100);
+        });
+
+        // Load saved zoom level
+        const savedZoom = localStorage.getItem('panelZoom');
+        if (savedZoom && zoomLevels.includes(parseInt(savedZoom))) {
+            updateZoom(parseInt(savedZoom));
+        }
 
         // UI Interactions
         uploadArea.addEventListener("click", () => fileInput.click());
@@ -820,6 +1201,9 @@
 
         // Run connectivity check right away
         probeBackendConnectivity();
+
+        // Initialize templates on page load
+        initializeTemplates();
 
         // --- PIPELINE HANDLER ---
         uploadBtn.addEventListener("click", async () => {
